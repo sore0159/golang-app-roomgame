@@ -1,0 +1,10 @@
+============= TODO =============
+LOGIN COOKIES
+HOOK UP TO BEEGEE OR WHATEVER ITS CALLED
+ISLAND TEMPLATE
+SORT BUTTON LISTS
+MAKE THE GAME
+
+
+
+============== DONE ============

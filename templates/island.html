@@ -1,0 +1,60 @@
+{{ define "button" }}
+<form id="tiny" action="island/act" method="post">
+        <input name="target" type="hidden" value="{{.Target}}">
+        <input name="action" type="hidden" value="{{.Action}}">
+        <input id="tiny" type="submit" value="{{.Text}}" title="{{.Hover}}">
+</form>
+{{ end }}
+
+<style>
+body {
+        font-size: x-large;
+    font-family:"Lucida Console", Monospace;
+        background-color: black;
+                color: white;
+    padding: 50 15%
+}
+form {
+        display:inline;
+}
+input {
+    background: None; border: None; color: red; font-size: x-large; 
+    font-family:"Lucida Console", Monospace;
+}
+input:hover {
+        text-decoration: underline;
+}
+
+
+</style>
+<body>
+<h3>Game: Gorilla Island</h3>
+You Are: {{.User}}<br>
+The time is: {{.Time}}<br>
+{{ if .PCItemButtons }}
+Items Carried:
+{{range .PCItemButtons}} {{ template "button" . }} {{end}}
+{{end}}
+
+<br>
+<br>
+You are at place: {{.Place}}<br>
+{{ if .LocItemButtons }}
+Items Here:
+{{range .LocItemButtons}} {{ template "button" . }} {{end}}
+<br>
+{{end}}
+
+{{ if .PeopleButtons }}
+People Here:
+{{range .PeopleButtons}} {{ template "button" . }} {{end}}
+<br>
+{{end}}
+
+{{ if .ExitButtons }}
+Exits from here: 
+{{range .ExitButtons}} {{ template "button" . }} {{end}}
+<br>
+{{end}}
+
+</body>
