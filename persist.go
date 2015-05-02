@@ -2,15 +2,16 @@ package island
 
 import (
 	"encoding/gob"
+	"fmt"
 	"log"
 	"os"
 )
 
-const SV_DIR = "saves/"
+const SV_DIR = "data/users/%s/saves/island"
 const SV_EXT = ".gob"
 
 func SaveFull(name string) string {
-	return SV_DIR + name + SV_EXT
+	return fmt.Sprintf(SV_DIR, name) + SV_EXT
 }
 
 func (g *Game) Save(fileName string) error {
