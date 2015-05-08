@@ -5,10 +5,13 @@ import (
 //	"errors"
 )
 
-const ID_PR = 1
-const ID_PL = 2
-const ID_IT = 3
-const ID_MAG = 10
+const (
+	ID_MAG = 10
+	ID_PR  = iota
+	ID_PL
+	ID_IT
+	ID_FT
+)
 
 type Registry struct {
 	NumPlaces int
@@ -120,12 +123,26 @@ type PersonHolder struct {
 	cache *Person
 }
 
+func (p *Person) NewHolder() *PersonHolder {
+	return &PersonHolder{
+		Data:  p.ID,
+		cache: p,
+	}
+}
+
 func (h *PersonHolder) Set(p *Person) {
-	h.Data = p.ID
+	if p == nil {
+		h.Data = 0
+	} else {
+		h.Data = p.ID
+	}
 	h.cache = p
 }
 
 func (h *PersonHolder) Get(g *Game) *Person {
+	if h.Data == 0 {
+		return nil
+	}
 	if h.cache == nil {
 		h.cache = g.GetPerson(h.Data)
 	}
@@ -173,12 +190,26 @@ type PlaceHolder struct {
 	cache *Place
 }
 
+func (p *Place) NewHolder() *PlaceHolder {
+	return &PlaceHolder{
+		Data:  p.ID,
+		cache: p,
+	}
+}
+
 func (h *PlaceHolder) Set(p *Place) {
-	h.Data = p.ID
+	if p == nil {
+		h.Data = 0
+	} else {
+		h.Data = p.ID
+	}
 	h.cache = p
 }
 
 func (h *PlaceHolder) Get(g *Game) *Place {
+	if h.Data == 0 {
+		return nil
+	}
 	if h.cache == nil {
 		h.cache = g.GetPlace(h.Data)
 	}
@@ -226,12 +257,26 @@ type ItemHolder struct {
 	cache *Item
 }
 
+func (i *Item) NewHolder() *ItemHolder {
+	return &ItemHolder{
+		Data:  i.ID,
+		cache: i,
+	}
+}
+
 func (h *ItemHolder) Set(i *Item) {
-	h.Data = i.ID
+	if i == nil {
+		h.Data = 0
+	} else {
+		h.Data = i.ID
+	}
 	h.cache = i
 }
 
 func (h *ItemHolder) Get(g *Game) *Item {
+	if h.Data == 0 {
+		return nil
+	}
 	if h.cache == nil {
 		h.cache = g.GetItem(h.Data)
 	}

@@ -7,8 +7,14 @@ import (
 
 type PageData struct {
 	Place          string
+	PDescr         string
 	User           string
+	PCName         string
 	Time           int
+	Chatlog        []string
+	History        []string
+	Features       []string
+	FeatureButtons []*Button
 	ExitButtons    []*Button
 	PeopleButtons  []*Button
 	LocItemButtons []*Button
@@ -27,12 +33,28 @@ func (g *Game) PageSet() {
 	pc_loc := pc.Location.Get(g)
 	p := &PageData{
 		User:           g.User,
+		PCName:         pc.Name,
 		Time:           g.Time,
 		Place:          pc_loc.Name,
+		PDescr:         pc_loc.Descrip,
+		Chatlog:        g.Chatlog,
+		History:        make([]string, 0),
+		Features:       make([]string, 0),
 		ExitButtons:    make([]*Button, 0),
 		PeopleButtons:  make([]*Button, 0),
 		LocItemButtons: make([]*Button, 0),
 		PCItemButtons:  make([]*Button, 0),
+		FeatureButtons: make([]*Button, 0),
+	}
+	// HISTORY
+	l := len(g.History)
+	if l > 3 {
+		l -= 3
+	} else {
+		l = 0
+	}
+	for _, event := range g.History[l:] {
+		p.History = append(p.History, event)
 	}
 	// EXIT BUTTONS
 	for loc, _ := range pc_loc.Exits.Get(g) {
@@ -68,7 +90,9 @@ func (g *Game) PageSet() {
 	}
 	//=============
 	// PC ITEM BUTTONS
+	var pcItemFlag string
 	for thing, _ := range pc.Contents.Get(g) {
+		pcItemFlag = thing.Name
 		p.PCItemButtons = append(p.PCItemButtons, &Button{
 			Action: "drop",
 			Target: fmt.Sprintf("%d", thing.ID),
@@ -76,6 +100,23 @@ func (g *Game) PageSet() {
 			Hover:  "Drop " + thing.Name,
 		})
 	}
+	//=============
+	// FEATURES (DOORS)
+	if pcItemFlag != "" {
+		for thing, _ := range pc_loc.Features.Get(g) {
+			p.FeatureButtons = append(p.FeatureButtons, &Button{
+				Action: "interact",
+				Target: fmt.Sprintf("%d", thing.ID),
+				Text:   thing.Name,
+				Hover:  fmt.Sprintf("Use %s on %s", pcItemFlag, thing.Name),
+			})
+		}
+	} else {
+		for thing, _ := range pc_loc.Features.Get(g) {
+			p.Features = append(p.Features, thing.Name)
+		}
+	}
+
 	//=============
 
 	g.Page = p

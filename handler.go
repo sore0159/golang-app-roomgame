@@ -12,7 +12,7 @@ import (
 
 const REDIR = "/"
 
-const TEMP_DIR = "templates/"
+const TEMP_DIR = "templates/island/"
 const TEMP_EXT = ".html"
 const ISLAND_TEMPLATE = "island" + TEMP_EXT
 
@@ -28,10 +28,10 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	// =============== POST ==============
 	if r.Method == "POST" {
-		//log.Println("POST")
 		err = POST_Process(r, gameFile)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 		redir := strings.Join(strings.Split(r.URL.Path, "/")[:3], "/")
 		http.Redirect(w, r, redir, http.StatusFound)
@@ -94,5 +94,9 @@ var ActionMap = NewActionMap()
 func NewActionMap() map[string]func(*Game, int) error {
 	a := make(map[string]func(*Game, int) error)
 	a["move"] = userMove
+	a["pickup"] = userPickup
+	a["drop"] = userDrop
+	a["talk"] = userTalk
+	a["interact"] = userInteract
 	return a
 }
