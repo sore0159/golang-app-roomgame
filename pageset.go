@@ -19,6 +19,7 @@ type PageData struct {
 	PeopleButtons  []*Button
 	LocItemButtons []*Button
 	PCItemButtons  []*Button
+	NewGameButton  *Button
 }
 
 type Button struct {
@@ -45,6 +46,12 @@ func (g *Game) PageSet() {
 		LocItemButtons: make([]*Button, 0),
 		PCItemButtons:  make([]*Button, 0),
 		FeatureButtons: make([]*Button, 0),
+		NewGameButton: &Button{
+			Action: "NEWGAME",
+			Target: "0",
+			Text:   "DELETE GAME",
+			Hover:  "Start Completely Over",
+		},
 	}
 	// HISTORY
 	l := len(g.History)

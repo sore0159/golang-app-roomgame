@@ -7,13 +7,14 @@ import (
 )
 
 type Game struct {
-	User    string
-	Time    int
-	Chatlog []string
-	History []string
-	PC      *PersonHolder
-	Page    *PageData
-	Reg     *Registry
+	User     string
+	FileName string
+	Time     int
+	Chatlog  []string
+	History  []string
+	PC       *PersonHolder
+	Page     *PageData
+	Reg      *Registry
 }
 
 func BlankGame() *Game {
@@ -120,4 +121,9 @@ func (g *Game) tic() {
 	}
 	g.Time++
 	g.Chatlog = make([]string, 0)
+}
+
+func userNEWGAME(g *Game, target int) error {
+	*g = *New(g.FileName)
+	return nil
 }

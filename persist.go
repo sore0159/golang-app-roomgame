@@ -2,20 +2,12 @@ package island
 
 import (
 	"encoding/gob"
-	"fmt"
 	"log"
 	"os"
 )
 
-const SV_DIR = "data/users/%s/saves/island"
-const SV_EXT = ".gob"
-
-func SaveFull(name string) string {
-	return fmt.Sprintf(SV_DIR, name) + SV_EXT
-}
-
 func (g *Game) Save(fileName string) error {
-	dataFile, err := os.Create(SaveFull(fileName))
+	dataFile, err := os.Create(fileName)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -32,7 +24,7 @@ func (g *Game) Save(fileName string) error {
 
 func Load(fileName string) (*Game, error) {
 	var g *Game
-	dataFile, err := os.Open(SaveFull(fileName))
+	dataFile, err := os.Open(fileName)
 	if err != nil {
 		if os.IsNotExist(err) {
 			g = New(fileName)
@@ -54,6 +46,7 @@ func Load(fileName string) (*Game, error) {
 		log.Println(err)
 		return nil, err
 	}
+	g.FileName = fileName
 	return g, nil
 }
 

@@ -4,10 +4,11 @@ import (
 	"strings"
 )
 
-func (g *Game) SetupGame1(userName string) {
-	g.User = userName
+func (g *Game) SetupGame1(fileName string) {
+	user := userName(fileName)
+	g.User = user
 	i := NewPlace("Small Island", g)
-	pc := i.SpawnPerson(strings.Title(strings.ToLower(userName)), g)
+	pc := i.SpawnPerson(strings.Title(strings.ToLower(user)), g)
 	g.PC.Set(pc)
 	p1 := i.SpawnPlace1W("Room One", g)
 	p2 := i.SpawnPlace1W("Room Two", g)
@@ -25,4 +26,12 @@ func (g *Game) SetupGame1(userName string) {
 	tim := p1.SpawnPerson("Tim", g)
 	tim.SpawnItem("Cloak", g)
 	g.PageSet()
+}
+
+func userName(fileName string) string {
+	user := strings.Split(fileName, "/")[3]
+	if len(user) > 5 && user[:6] == "guest-" {
+		return "Guest"
+	}
+	return user
 }

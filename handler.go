@@ -19,16 +19,11 @@ const ISLAND_TEMPLATE = "island" + TEMP_EXT
 var template_list = []string{TEMP_DIR + ISLAND_TEMPLATE}
 var templates = template.Must(template.ParseFiles(template_list...))
 
-func ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// ======== LOOK AT r TO FIND WHICH GAME ========
-	gameFile, err := GameFileFor(r)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+func ServeHTTP(w http.ResponseWriter, r *http.Request, filename string) {
 	// =============== POST ==============
+	var err error
 	if r.Method == "POST" {
-		err = POST_Process(r, gameFile)
+		err = POST_Process(r, filename)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -37,7 +32,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, redir, http.StatusFound)
 		return
 	} // ==========  GET  ===========
-	GET_Process(w, gameFile)
+	GET_Process(w, filename)
 }
 
 func GameFileFor(r *http.Request) (string, error) {
@@ -98,5 +93,6 @@ func NewActionMap() map[string]func(*Game, int) error {
 	a["drop"] = userDrop
 	a["talk"] = userTalk
 	a["interact"] = userInteract
+	a["NEWGAME"] = userNEWGAME
 	return a
 }
