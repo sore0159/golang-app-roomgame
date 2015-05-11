@@ -1,4 +1,4 @@
-package island
+package roomgame
 
 import (
 	"fmt"
@@ -11,6 +11,7 @@ type PageData struct {
 	User           string
 	PCName         string
 	Time           int
+	ObjNum         int
 	Chatlog        []string
 	History        []string
 	Features       []string
@@ -39,6 +40,7 @@ func (g *Game) PageSet() {
 		Place:          pc_loc.Name,
 		PDescr:         pc_loc.Descrip,
 		Chatlog:        g.Chatlog,
+		ObjNum:         len(g.Objectives.Get(g)),
 		History:        make([]string, 0),
 		Features:       make([]string, 0),
 		ExitButtons:    make([]*Button, 0),

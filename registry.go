@@ -1,4 +1,4 @@
-package island
+package roomgame
 
 import (
 //"log"
@@ -10,7 +10,7 @@ const (
 	ID_PR  = iota
 	ID_PL
 	ID_IT
-	ID_FT
+	ID_EV
 )
 
 type Registry struct {
@@ -42,24 +42,11 @@ func (p *Place) Register(g *Game) {
 	g.Reg.Places[p.ID] = p
 }
 
-func (i *Item) Register(g *Game) {
-	g.Reg.NumItems++
-	i.ID = g.Reg.NumItems*ID_MAG + ID_IT
-	g.Reg.Items[i.ID] = i
-}
-
 func (g *Game) GetPerson(id int) *Person {
 	if id%ID_MAG != ID_PR {
 		return nil
 	}
 	return g.Reg.People[id]
-}
-
-func (g *Game) GetItem(id int) *Item {
-	if id%ID_MAG != ID_IT {
-		return nil
-	}
-	return g.Reg.Items[id]
 }
 
 func (g *Game) GetPlace(id int) *Place {
@@ -75,10 +62,6 @@ func (p *Person) UnRegister(g *Game) {
 
 func (p *Place) UnRegister(g *Game) {
 	delete(g.Reg.Places, p.ID)
-}
-
-func (i *Item) UnRegister(g *Game) {
-	delete(g.Reg.Items, i.ID)
 }
 
 //============ FAKE SETS ================
@@ -281,4 +264,20 @@ func (h *ItemHolder) Get(g *Game) *Item {
 		h.cache = g.GetItem(h.Data)
 	}
 	return h.cache
+}
+
+func (i *Item) Register(g *Game) {
+	g.Reg.NumItems++
+	i.ID = g.Reg.NumItems*ID_MAG + ID_IT
+	g.Reg.Items[i.ID] = i
+}
+
+func (g *Game) GetItem(id int) *Item {
+	if id%ID_MAG != ID_IT {
+		return nil
+	}
+	return g.Reg.Items[id]
+}
+func (i *Item) UnRegister(g *Game) {
+	delete(g.Reg.Items, i.ID)
 }

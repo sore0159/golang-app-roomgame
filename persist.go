@@ -1,22 +1,21 @@
-package island
+package roomgame
 
 import (
 	"encoding/gob"
-	"log"
 	"os"
 )
 
 func (g *Game) Save(fileName string) error {
 	dataFile, err := os.Create(fileName)
 	if err != nil {
-		log.Println(err)
+		Log(err)
 		return err
 	}
 	defer dataFile.Close()
 	dataEncoder := gob.NewEncoder(dataFile)
 	err = dataEncoder.Encode(g)
 	if err != nil {
-		log.Println(err)
+		Log(err)
 		return err
 	}
 	return nil
@@ -30,12 +29,12 @@ func Load(fileName string) (*Game, error) {
 			g = New(fileName)
 			err = g.Save(fileName)
 			if err != nil {
-				log.Println(err)
+				Log(err)
 				return nil, err
 			}
 			return g, nil
 		}
-		log.Println(err)
+		Log(err)
 		return nil, err
 	}
 	g = BlankGame()
@@ -43,7 +42,7 @@ func Load(fileName string) (*Game, error) {
 	dataDecoder := gob.NewDecoder(dataFile)
 	err = dataDecoder.Decode(g)
 	if err != nil {
-		log.Println(err)
+		Log(err)
 		return nil, err
 	}
 	g.FileName = fileName

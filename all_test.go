@@ -1,4 +1,4 @@
-package island
+package roomgame
 
 import (
 	"fmt"

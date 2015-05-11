@@ -1,4 +1,4 @@
-package island
+package roomgame
 
 import (
 	"fmt"
@@ -17,7 +17,6 @@ type Place struct {
 	Occupants   *PersonSet
 	Contents    *ItemSet
 	Features    *ItemSet
-	Events      []*Event
 	// SPECIFIC
 	Exits *PlaceSet
 }
@@ -31,7 +30,6 @@ func NewPlace(name string, g *Game) *Place {
 		Contents:    NewItemSet(),
 		Exits:       NewPlaceSet(),
 		Features:    NewItemSet(),
-		Events:      make([]*Event, 0),
 	}
 	p.Register(g)
 	return p
@@ -48,6 +46,11 @@ func (p1 *Place) Connect(p2 *Place) {
 
 func (p1 *Place) Connect1W(p2 *Place) {
 	p1.Exits.Add(p2)
+}
+
+func (p1 *Place) UnConnect(p2 *Place) {
+	p1.Exits.Drop(p2)
+	p2.Exits.Drop(p1)
 }
 
 func (p *Place) SpawnPlace(name string, g *Game) *Place {
@@ -94,12 +97,6 @@ func (p *Place) SpawnFeature(name string, g *Game) *Item {
 	return f
 }
 
-func (p *Place) SpawnEvent() *Event {
-	e := NewEvent()
-	p.Events = append(p.Events, e)
-	return e
-}
-
 // ==================================================
 type Person struct {
 	Name string
@@ -108,9 +105,9 @@ type Person struct {
 	Location *PlaceHolder
 	/// DOWN
 	Contents *ItemSet
-	Events   []*Event
 	// SPECIFIC
 	Dialogue string
+	Speech   string
 }
 
 func NewPerson(name string, g *Game) *Person {
@@ -118,7 +115,7 @@ func NewPerson(name string, g *Game) *Person {
 		Name:     name,
 		Contents: NewItemSet(),
 		Location: &PlaceHolder{},
-		Events:   make([]*Event, 0),
+		Speech:   "%s greets %s.",
 	}
 	p.Register(g)
 	return p
@@ -132,12 +129,6 @@ func (p *Person) SpawnItem(name string, g *Game) *Item {
 	i := NewItem(name, g)
 	p.PickUp(i, g)
 	return i
-}
-
-func (p *Person) SpawnEvent() *Event {
-	e := NewEvent()
-	p.Events = append(p.Events, e)
-	return e
 }
 
 func (p *Person) MoveTo(pl *Place, g *Game) {
@@ -165,7 +156,7 @@ func (p *Person) Drop(i *Item, g *Game) {
 }
 
 func (p *Person) Talk(t *Person, g *Game) string {
-	return fmt.Sprintf("%s greets %s.", p.Name, t.Name)
+	return fmt.Sprintf(p.Speech, p.Name, t.Name)
 }
 
 // ==================================================

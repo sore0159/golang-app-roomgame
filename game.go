@@ -1,4 +1,4 @@
-package island
+package roomgame
 
 import (
 	"errors"
@@ -7,22 +7,25 @@ import (
 )
 
 type Game struct {
-	User     string
-	FileName string
-	Time     int
-	Chatlog  []string
-	History  []string
-	PC       *PersonHolder
-	Page     *PageData
-	Reg      *Registry
+	User       string
+	FileName   string
+	Time       int
+	Chatlog    []string
+	History    []string
+	PC         *PersonHolder
+	Page       *PageData
+	Reg        *Registry
+	Over       bool
+	Objectives *PersonSet
 }
 
 func BlankGame() *Game {
 	return &Game{
-		PC:      &PersonHolder{},
-		Reg:     NewRegistry(),
-		Chatlog: make([]string, 0),
-		History: make([]string, 0),
+		PC:         &PersonHolder{},
+		Reg:        NewRegistry(),
+		Chatlog:    make([]string, 0),
+		History:    make([]string, 0),
+		Objectives: NewPersonSet(),
 	}
 }
 
@@ -67,7 +70,6 @@ func userPickup(g *Game, target int) error {
 
 func userDrop(g *Game, target int) error {
 	pc := g.PC.Get(g)
-	//loc := pc.Location.Get(g)
 	tar := g.GetItem(target)
 	if tar == nil || !pc.Contents.Has(tar) {
 		return errors.New("Invalid drop target!")
@@ -88,6 +90,11 @@ func userTalk(g *Game, target int) error {
 	}
 	g.tic()
 	g.Witness(tar.Talk(pc, g))
+	g.Objectives.Drop(tar)
+	if len(g.Objectives.Get(g)) < 1 {
+		g.Over = true
+		g.Witness("THE WINNER IS YOU!")
+	}
 	g.PageSet()
 	return nil
 }

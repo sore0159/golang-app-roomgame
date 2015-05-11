@@ -1,13 +1,13 @@
-package island
+package roomgame
 
 import (
 	"strings"
 )
 
-func (g *Game) SetupGame1(fileName string) {
+func (g *Game) SetupGame2(fileName string) {
 	user := userName(fileName)
 	g.User = user
-	i := NewPlace("Small Island", g)
+	i := NewPlace("Tiny Game", g)
 	pc := i.SpawnPerson(strings.Title(strings.ToLower(user)), g)
 	g.PC.Set(pc)
 	p1 := i.SpawnPlace1W("Room One", g)
