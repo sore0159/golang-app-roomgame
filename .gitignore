@@ -1,5 +1,2 @@
-*
-
-!*.go
-!*/*.html
-!*.txt
+data
+templates
