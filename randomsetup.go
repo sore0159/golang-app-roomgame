@@ -9,6 +9,58 @@ import (
 
 var Seed = randomlists.Seed
 
+func (g *Game) SetupGame1(fileName string) {
+	user := userName(fileName)
+	g.User = user
+	numLevels := 3 + rand.Intn(2)
+	colors := randomlists.Colors(numLevels)
+	peopleN := randomlists.People(numLevels + 1)
+	levels := make([]*Level, numLevels)
+	for i, _ := range levels {
+		levels[i] = NewLevel(colors[i], g)
+	}
+	//
+	placeNames := randomlists.Rooms(g.Reg.NumPlaces)
+	var i int
+	for _, place := range g.Reg.Places {
+		place.Name = placeNames[i]
+		i++
+	}
+	startSpot := NewPlace("Start Spot", g)
+	greeter := startSpot.SpawnPerson(peopleN[numLevels], g)
+	str1 := fmt.Sprintf("%d", numLevels+1)
+	str2 := fmt.Sprintf("%d", numLevels)
+	greeter.Speech = "%s welcomes %s to RoomGame Go!  Find all " + str1 + " people (" + str2 + " now) and talk with them to win!"
+	g.Objectives.Add(greeter)
+	pc := startSpot.SpawnPerson(strings.Title(strings.ToLower(user)), g)
+	g.PC.Set(pc)
+	x := g.randSet(levels[0].unconnected)
+	startSpot.Connect(x)
+	levels[0].unconnected.Drop(x)
+	if levels[0].part2 != nil {
+		p2 := g.randSet(levels[0].endpoints2)
+		p1 := g.randSet(levels[0].endpoints1)
+		levels[0].endpoints2.Drop(p2)
+		levels[0].endpoints1.Drop(p1)
+		p2.Connect(p1)
+	}
+	//
+	keys := make([]*Item, 0)
+	clrs := make([]string, 0)
+	for i, lvl := range levels {
+		if i != 0 {
+			g.ConnectLevels(levels[i-1], lvl)
+			keys = append(keys, lvl.key)
+			clrs = append(clrs, lvl.color)
+			g.lockup(lvl, keys, clrs)
+		}
+		p := g.randSet(lvl.all)
+		per := p.SpawnPerson(peopleN[i], g)
+		g.Objectives.Add(per)
+	}
+	g.PageSet()
+}
+
 type Section struct {
 	unconnected *PlaceSet
 	all         *PlaceSet
@@ -194,58 +246,8 @@ func (g *Game) ConnectLevels(lower, higher *Level) {
 	// Items of Power?
 }
 
-func (g *Game) SetupGame1(fileName string) {
-	user := userName(fileName)
-	g.User = user
-	numLevels := 3 + rand.Intn(3)
-	colors := randomlists.Colors(numLevels)
-	peopleN := randomlists.People(numLevels + 1)
-	levels := make([]*Level, numLevels)
-	for i, _ := range levels {
-		levels[i] = NewLevel(colors[i], g)
-	}
-	//
-	placeNames := randomlists.Rooms(g.Reg.NumPlaces)
-	var i int
-	for _, place := range g.Reg.Places {
-		place.Name = placeNames[i]
-		i++
-	}
-	startSpot := NewPlace("Start Spot", g)
-	greeter := startSpot.SpawnPerson(peopleN[numLevels], g)
-	str1 := fmt.Sprintf("%d", numLevels+1)
-	str2 := fmt.Sprintf("%d", numLevels)
-	greeter.Speech = "%s welcomes %s to RoomGame Go!  Find all " + str1 + " people (" + str2 + " now) and talk with them to win!"
-	g.Objectives.Add(greeter)
-	pc := startSpot.SpawnPerson(strings.Title(strings.ToLower(user)), g)
-	g.PC.Set(pc)
-	x := g.randSet(levels[0].unconnected)
-	startSpot.Connect(x)
-	levels[0].unconnected.Drop(x)
-	if levels[0].part2 != nil {
-		p2 := g.randSet(levels[0].endpoints2)
-		p1 := g.randSet(levels[0].endpoints1)
-		levels[0].endpoints2.Drop(p2)
-		levels[0].endpoints1.Drop(p1)
-		p2.Connect(p1)
-	}
-	//
-	keys := make([]*Item, 0)
-	for i, lvl := range levels {
-		if i != 0 {
-			g.ConnectLevels(levels[i-1], lvl)
-			g.lockup(lvl, keys)
-		}
-		keys = append(keys, lvl.key)
-		p := g.randSet(lvl.all)
-		per := p.SpawnPerson(peopleN[i], g)
-		g.Objectives.Add(per)
-	}
-	g.PageSet()
-}
-
-func (g *Game) lockup(lvl *Level, keys []*Item) {
-	for _, key := range keys {
+func (g *Game) lockup(lvl *Level, keys []*Item, colors []string) {
+	for k, key := range keys {
 		j := 1 + rand.Intn(2)
 		for i := 0; i < j; i++ {
 			var l int
@@ -255,7 +257,7 @@ func (g *Game) lockup(lvl *Level, keys []*Item) {
 				l = len(p1.Exits.Get(g))
 			}
 			p2 := g.randSet(p1.Exits)
-			g.LockedDoor(lvl.color, p1, p2, key)
+			g.LockedDoor(colors[k], p1, p2, key)
 		}
 	}
 }

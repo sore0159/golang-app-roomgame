@@ -11,7 +11,7 @@ import (
 
 const REDIR = "/"
 
-const TEMP_DIR = "templates/roomgame/"
+const TEMP_DIR = "templates/games/roomgame/"
 const TEMP_EXT = ".html"
 const MAIN_TEMPLATE = "main" + TEMP_EXT
 
@@ -27,15 +27,16 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request, filename string) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		redir := strings.Join(strings.Split(r.URL.Path, "/")[:3], "/")
-		http.Redirect(w, r, redir, http.StatusFound)
+		http.Redirect(w, r, r.URL.Path, http.StatusFound)
 		return
 	} // ==========  GET  ===========
+	urlParts := strings.Split(r.URL.Path, "/")
+	if len(urlParts) > 3 {
+		redir := strings.Join(urlParts[:3], "/")
+		http.Redirect(w, r, redir, http.StatusFound)
+		return
+	}
 	GET_Process(w, filename)
-}
-
-func GameFileFor(r *http.Request) (string, error) {
-	return strings.Split(r.URL.Path, "/")[1], nil
 }
 
 func GET_Process(w http.ResponseWriter, gameFile string) {
