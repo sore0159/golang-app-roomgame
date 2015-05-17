@@ -21,6 +21,9 @@ type PageData struct {
 	LocItemButtons []*Button
 	PCItemButtons  []*Button
 	NewGameButton  *Button
+	UName          string
+	HomeURL        string
+	GameURL        string
 }
 
 type Button struct {

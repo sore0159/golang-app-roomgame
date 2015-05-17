@@ -5,8 +5,8 @@ import (
 	"os"
 )
 
-func (g *Game) Save(fileName string) error {
-	dataFile, err := os.Create(fileName)
+func (g *Game) Save() error {
+	dataFile, err := os.Create(g.FileName)
 	if err != nil {
 		Log(err)
 		return err
@@ -27,7 +27,7 @@ func Load(fileName string) (*Game, error) {
 	if err != nil {
 		if os.IsNotExist(err) {
 			g = New(fileName)
-			err = g.Save(fileName)
+			err = g.Save()
 			if err != nil {
 				Log(err)
 				return nil, err
@@ -52,5 +52,6 @@ func Load(fileName string) (*Game, error) {
 func New(fileName string) *Game {
 	g := BlankGame()
 	g.SetupGame1(fileName)
+	g.FileName = fileName
 	return g
 }

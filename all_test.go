@@ -8,7 +8,7 @@ import (
 
 func TestIsle(t *testing.T) {
 	fmt.Println("TESTING")
-	g := New("test1")
+	g := New("/aau/aoeu/aoue/test1")
 	fmt.Printf("%+v\n", g)
 
 }

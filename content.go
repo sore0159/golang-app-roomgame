@@ -4,60 +4,45 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"mule/apps/auth"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 const REDIR = "/"
 
-const TEMP_DIR = "templates/games/roomgame/"
+const TEMP_DIR = "templates/apps/" + APPNAME + "/"
 const TEMP_EXT = ".html"
 const MAIN_TEMPLATE = "main" + TEMP_EXT
 
 var template_list = []string{TEMP_DIR + MAIN_TEMPLATE}
 var templates = template.Must(template.ParseFiles(template_list...))
 
-func ServeHTTP(w http.ResponseWriter, r *http.Request, filename string) {
+func RoomPage(d *auth.Data, g *Game) {
 	// =============== POST ==============
-	var err error
-	if r.Method == "POST" {
-		err = POST_Process(r, filename)
+	if d.R.Method == "POST" {
+		err := POST_Process(d.R, g)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(d.W, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		http.Redirect(w, r, r.URL.Path, http.StatusFound)
+		d.GoGame()
 		return
 	} // ==========  GET  ===========
-	urlParts := strings.Split(r.URL.Path, "/")
-	if len(urlParts) > 3 {
-		redir := strings.Join(urlParts[:3], "/")
-		http.Redirect(w, r, redir, http.StatusFound)
-		return
-	}
-	GET_Process(w, filename)
+	GET_Process(d, g)
 }
 
-func GET_Process(w http.ResponseWriter, gameFile string) {
-	game, err := Load(gameFile)
+func GET_Process(d *auth.Data, g *Game) {
+	g.Page.UName = d.Name
+	g.Page.HomeURL = d.HomeURL
+	g.Page.GameURL = d.GameURL
+	err := templates.ExecuteTemplate(d.W, MAIN_TEMPLATE, g.Page)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "text/html")
-	err = templates.ExecuteTemplate(w, MAIN_TEMPLATE, game.Page)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(d.W, err.Error(), http.StatusInternalServerError)
 	}
 }
 
-func POST_Process(r *http.Request, gameFile string) error {
-	game, err := Load(gameFile)
-	if err != nil {
-		Log(err)
-		return err
-	}
+func POST_Process(r *http.Request, game *Game) error {
 	action := r.FormValue("action")
 	if game.Over && action != "NEWGAME" {
 		return nil
@@ -79,7 +64,7 @@ func POST_Process(r *http.Request, gameFile string) error {
 		Log(err)
 		return err
 	}
-	err = game.Save(gameFile)
+	err = game.Save()
 	if err != nil {
 		Log(err)
 		return err
