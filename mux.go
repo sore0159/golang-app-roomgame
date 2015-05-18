@@ -10,15 +10,11 @@ const APPNAME = "roomgame"
 
 func SetupMux(r *mux.Router) {
 	r.HandleFunc("/", gWrap(RoomPage))
-	r.HandleFunc("/roomgame", gWrap(RoomPage))
-	r.HandleFunc("/{rest:.*}", wrap(auth.RedirGame))
+	r.HandleFunc("/{rest:.*}", auth.RedirGame(APPNAME))
 }
 
 func gWrap(f func(*auth.Data, *Game)) func(http.ResponseWriter, *http.Request) {
 	return auth.DataWrap(auth.GameURLWrap(APPNAME, GameWrap(f)))
-}
-func wrap(f func(*auth.Data)) func(http.ResponseWriter, *http.Request) {
-	return auth.DataWrap(auth.GameURLWrap(APPNAME, f))
 }
 
 func GameWrap(f func(*auth.Data, *Game)) func(*auth.Data) {
