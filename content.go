@@ -11,7 +11,7 @@ import (
 
 const REDIR = "/"
 
-const TEMP_DIR = "templates/apps/" + APPNAME + "/"
+const TEMP_DIR = "templates/" + APPNAME + "/"
 const TEMP_EXT = ".html"
 const MAIN_TEMPLATE = "main" + TEMP_EXT
 

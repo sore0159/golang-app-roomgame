@@ -1,0 +1,71 @@
+{{ define "button" }}
+<form id="tiny" action="roomgame" method="post">
+        <input name="target" type="hidden" value="{{.Target}}">
+        <input name="action" type="hidden" value="{{.Action}}">
+        <input id="tiny" type="submit" value="{{.Text}}" title="{{.Hover}}">
+</form>
+{{ end }}
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Mule's RoomGame Go! Project Page</title>
+<link rel="stylesheet" href="/_static/css/roomgame/main.css">
+</head>
+<body>
+<h3>RoomGame Go!</h3>
+You Are: {{.PCName}}<br>
+The time is: {{.Time}}<br>
+{{ if eq .ObjNum 0 }} 
+You have won!<br>
+{{ else }}
+You have {{.ObjNum }} People Left to Find<br>
+{{ end }}
+{{ if .PCItemButtons }}
+Items Carried:
+{{range .PCItemButtons}} {{ template "button" . }} {{end}}
+{{end}}
+
+<br>
+<br>
+You are at place: {{.Place}}<br>
+{{ if .PDescr }} {{.PDescr}}<br>{{end}}
+<br>
+
+{{ if or .Features .FeatureButtons }}
+{{.Place}} has:
+{{range .Features}} {{ . }}<br> {{end}}
+{{range .FeatureButtons}} {{ template "button" . }}<br> {{end}}
+<br>
+{{end}}
+
+{{ if .LocItemButtons }}
+Items Here:
+{{range .LocItemButtons}} {{ template "button" . }} {{end}}
+<br>
+{{end}}
+
+{{ if .PeopleButtons }}
+People Here:
+{{range .PeopleButtons}} {{ template "button" . }} {{end}}
+<br>
+{{end}}
+
+{{ if .ExitButtons }}
+Exits from here: 
+{{range .ExitButtons}} {{ template "button" . }} {{end}}
+<br>
+{{ end}}
+<br>
+{{ range .History }}
+{{.}}<br>
+{{ end }}
+{{ range .Chatlog }}
+{{.}}<br>
+{{ end }}
+<br><br>
+{{template "button" .NewGameButton }}
+<br><br><a href="{{.HomeURL}}">Return To Control Center</a>
+<br><a href="/">Return To Main Page</a>
+</body>

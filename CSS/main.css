@@ -1,0 +1,21 @@
+body {
+        font-size: x-large;
+        background-color: black;
+        font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+        color: white;
+        margin: 5% 15% 15% 15%;
+}
+form {
+        display:inline;
+}
+input {
+        background: None; border: None; color: #FF3333; font-size: x-large; 
+        font-family:"Lucida Console", Monospace;
+}
+input:hover {
+        text-decoration: underline;
+}
+
+a {
+        color:#3399FF;
+       }
